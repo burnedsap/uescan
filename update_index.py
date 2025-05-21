@@ -2,8 +2,9 @@ import requests
 from bs4 import BeautifulSoup
 
 # Replace this with your actual Google Doc ID
-DOC_ID = "DUMMY_DOC_ID"
+DOC_ID = "1Cgj_C6d-YkrLJYBpO-zhgwfzkTFJiwFwwla0haZgPaY"
 DOC_URL = f"https://docs.google.com/document/d/{DOC_ID}/export?format=html"
+
 
 INDEX_PATH = "py-test.html"
 
