@@ -6,7 +6,7 @@ DOC_ID = "1Cgj_C6d-YkrLJYBpO-zhgwfzkTFJiwFwwla0haZgPaY"
 DOC_URL = f"https://docs.google.com/document/d/{DOC_ID}/export?format=html"
 
 
-INDEX_PATH = "py-test.html"
+INDEX_PATH = "index.html"
 
 def fetch_google_doc_body(doc_url):
     response = requests.get(doc_url)
