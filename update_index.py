@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 
 # Replace this with your actual Google Doc ID
 DOC_ID = "1Cgj_C6d-YkrLJYBpO-zhgwfzkTFJiwFwwla0haZgPaY"
-DOC_URL = f"https://docs.google.com/document/d/{DOC_ID}/export?format=html"
+DOC_URL = f"https://docs.google.com/document/d/1Cgj_C6d-YkrLJYBpO-zhgwfzkTFJiwFwwla0haZgPaY/export?format=html"
 
 
 INDEX_PATH = "index.html"
