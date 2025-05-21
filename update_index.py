@@ -1,11 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 
-# Replace this with your real Google Doc ID
-DOC_ID = "1Cgj_C6d-YkrLJYBpO-zhgwfzkTFJiwFwwla0haZgPaY"
-DOC_URL = f"https://docs.google.com/document/d/{DOC_ID}/export?format=html"
+DOC_URL = "https://docs.google.com/document/d/e/2PACX-1vRVM9z4ZMZdsmEygLvEAe_jYWzSyvBRPvQu2xPOs2EGXRZPU9x310YMMcUQie4RLHb_1L_jbmsMKwUp/pub"
 INDEX_HTML = "index.html"
-
 
 def fetch_google_doc_body(doc_url):
     print("Fetching Google Doc...")
@@ -23,7 +20,10 @@ def fetch_google_doc_body(doc_url):
         raise Exception("Failed to fetch Google Doc")
 
     soup = BeautifulSoup(response.text, 'html.parser')
-    return soup.body
+    content_div = soup.find("div", {"id": "contents"})
+    if not content_div:
+        raise Exception("Could not find content in the published doc")
+    return content_div
 
 def update_index_html(new_content):
     with open(INDEX_HTML, 'r', encoding='utf-8') as f:
@@ -31,10 +31,8 @@ def update_index_html(new_content):
 
     soup = BeautifulSoup(html, 'html.parser')
     old_body = soup.body
-    new_body = BeautifulSoup(str(new_content), 'html.parser').body
-
     old_body.clear()
-    for tag in new_body.contents:
+    for tag in new_content.contents:
         old_body.append(tag)
 
     with open(INDEX_HTML, 'w', encoding='utf-8') as f:
