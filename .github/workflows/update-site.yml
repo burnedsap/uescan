@@ -1,32 +1,32 @@
-name: Update Site from Google Doc
+name: Update from Google Doc
 
 on:
-  workflow_dispatch:  # allows manual trigger
+  workflow_dispatch:
   schedule:
-    - cron: '0 * * * *'  # runs every hour
+    - cron: '0 * * * *'  # every hour
 
 jobs:
-  update-site:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install beautifulsoup4 requests
 
-      - name: Run update script
+      - name: Update index.html from Google Doc
         run: python update_index.py
 
-      - name: Commit and push changes
+      - name: Commit changes
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
           git add index.html
-          git commit -m "Auto-update from Google Doc" || echo "No changes to commit"
+          git commit -m "Auto-update from Google Doc" || echo "No changes"
           git push
