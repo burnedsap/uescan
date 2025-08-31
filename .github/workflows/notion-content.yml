@@ -36,6 +36,9 @@ jobs:
         const NOTION_TOKEN = process.env.NOTION_TOKEN;
         const PAGE_ID = process.env.NOTION_PAGE_ID;
 
+        // Array to store images that need to be downloaded
+        let imagesToDownload = [];
+
         if (!NOTION_TOKEN || !PAGE_ID) {
           console.error('Missing NOTION_TOKEN or NOTION_PAGE_ID environment variables');
           process.exit(1);
@@ -151,10 +154,102 @@ jobs:
               const calloutText = convertRichText(content.rich_text);
               return calloutText ? `<div class="callout">${calloutText}</div>` : '';
             
+            case 'image':
+              return handleImageBlock(block);
+            
             default:
               const defaultText = convertRichText(content.rich_text || []);
               return defaultText ? `<p>${defaultText}</p>` : '';
           }
+        }
+
+        function handleImageBlock(block) {
+          const image = block.image;
+          let imageUrl = '';
+          let caption = '';
+          
+          // Get image URL based on type
+          if (image.type === 'external') {
+            imageUrl = image.external.url;
+          } else if (image.type === 'file') {
+            imageUrl = image.file.url;
+          }
+          
+          // Get caption if exists
+          if (image.caption && image.caption.length > 0) {
+            caption = convertRichText(image.caption);
+          }
+          
+          if (!imageUrl) {
+            return '';
+          }
+          
+          // Generate unique filename for downloaded image
+          const imageId = block.id.replace(/-/g, '');
+          const extension = imageUrl.includes('.png') ? 'png' : 
+                          imageUrl.includes('.gif') ? 'gif' : 
+                          imageUrl.includes('.webp') ? 'webp' : 'jpg';
+          const filename = `image_${imageId}.${extension}`;
+          
+          // Store image info for downloading
+          imagesToDownload.push({
+            url: imageUrl,
+            filename: filename,
+            caption: caption
+          });
+          
+          // Return HTML with local path
+          const imgTag = `<img src="./images/${filename}" alt="${caption}" style="max-width: 100%; height: auto; border-radius: 8px; margin: 1rem 0;">`;
+          const captionTag = caption ? `<p class="image-caption" style="text-align: center; font-style: italic; color: var(--text-light); font-size: 0.9rem;">${caption}</p>` : '';
+          
+          return `<div class="notion-image">${imgTag}${captionTag}</div>`;
+        }
+
+        function downloadImage(imageInfo) {
+          return new Promise((resolve, reject) => {
+            const url = imageInfo.url;
+            const filename = imageInfo.filename;
+            const filepath = `images/${filename}`;
+            
+            // Create images directory if it doesn't exist
+            if (!fs.existsSync('images')) {
+              fs.mkdirSync('images', { recursive: true });
+            }
+            
+            // Skip if file already exists
+            if (fs.existsSync(filepath)) {
+              console.log(`Image already exists: ${filename}`);
+              resolve();
+              return;
+            }
+            
+            const https = require('https');
+            const file = fs.createWriteStream(filepath);
+            
+            const request = https.get(url, (response) => {
+              if (response.statusCode === 200) {
+                response.pipe(file);
+                file.on('finish', () => {
+                  file.close();
+                  console.log(`Downloaded: ${filename}`);
+                  resolve();
+                });
+              } else {
+                console.warn(`Failed to download image: ${url} (${response.statusCode})`);
+                resolve(); // Continue even if one image fails
+              }
+            });
+            
+            request.on('error', (error) => {
+              console.warn(`Error downloading image: ${error.message}`);
+              resolve(); // Continue even if one image fails
+            });
+            
+            file.on('error', (error) => {
+              console.warn(`Error writing image file: ${error.message}`);
+              resolve(); // Continue even if one image fails
+            });
+          });
         }
 
         function groupListItems(htmlArray) {
@@ -200,10 +295,19 @@ jobs:
             
             console.log(`Fetched ${data.results.length} blocks`);
             
+            // Reset images array
+            imagesToDownload = [];
+            
             // Convert blocks to HTML
             const htmlBlocks = data.results
               .map(block => convertNotionBlockToHTML(block))
               .filter(html => html.trim() !== '');
+            
+            // Download all images
+            if (imagesToDownload.length > 0) {
+              console.log(`Downloading ${imagesToDownload.length} images...`);
+              await Promise.all(imagesToDownload.map(downloadImage));
+            }
             
             // Group list items properly
             const groupedHtml = groupListItems(htmlBlocks);
@@ -214,14 +318,15 @@ jobs:
             const output = {
               content: content,
               lastUpdated: new Date().toISOString(),
-              blocksProcessed: data.results.length
+              blocksProcessed: data.results.length,
+              imagesProcessed: imagesToDownload.length
             };
             
             // Write to file
             fs.writeFileSync('content/notion-content.json', JSON.stringify(output, null, 2));
             
             console.log('Content successfully written to content/notion-content.json');
-            console.log(`Processed ${output.blocksProcessed} blocks`);
+            console.log(`Processed ${output.blocksProcessed} blocks and ${output.imagesProcessed} images`);
             
           } catch (error) {
             console.error('Error:', error);
@@ -239,6 +344,7 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add content/notion-content.json
+        git add images/
         
         # Only commit if there are changes
         if git diff --staged --quiet; then
