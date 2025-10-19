@@ -4,78 +4,106 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UESCAN - Upper East Side Collective Action Network</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --pastel-pink: #F8E8E8;
-            --pastel-blue: #E8F0F8;
-            --pastel-green: #E8F8E8;
-            --uescan-green: #00933c;
-            --uescan-orange:#EB6800;
-            --uescan-yellow: #F6BC26;
-            --text-dark: #2D3748;
-            --text-light: #4A5568;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            --pri-green: #00933C;
+            --pri-orange: #EB6800;
+            --pri-yellow: #F6BC26;
+            --back-green: #E6F7EB;
+            --back-orange: #FDF0E6;
+            --back-yellow: #FFF9E6;
         }
 
         body {
-            font-family: 'Arial', sans-serif;
-            line-height: 1.6;
-            color: var(--text-dark);
-            background: linear-gradient(135deg, var(--pastel-pink) 0%, var(--pastel-blue) 50%, var(--pastel-green) 100%);
+            font-family: 'Montserrat', sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 400;
+            font-style: normal;
+            margin: 0;
+            padding: 0;
+            background-color: var(--back-orange);
+            color: #333;
             min-height: 100vh;
         }
-
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
         }
-
+        
         /* Header */
         header {
-            background: rgba(255, 255, 255, 0.9);
+            /* background: rgba(255, 255, 255, 0.9); */
+            background: var(--back-green);
             backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 1rem 0;
-            position: sticky;
+            border-bottom: 2px solid var(--pri-green);
+            /* padding: 0.1rem 0; */
+            /* position: sticky; */
             top: 0;
             z-index: 100;
-        }
-
-        .header-content {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        /* center header content: logo and nav */
+       
+
+        /* ensure the logo block is centered */
+        header img {
+            display: block;
+            margin: 2rem auto;
+            text-align: center;
+            height:150px;
+            width:auto;
         }
 
-        .logo {
+        /* center the nav items */
+        header nav ul {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        /* keep header compact on small screens */
+        @media (max-width: 768px) {
+            header {
+                padding: 0.75rem 0;
+            }
+        }
+
+        /* .logo {
             font-size: 2rem;
             font-weight: bold;
             color: var(--text-dark);
             text-decoration: none;
-        }
+        } */
 
         nav ul {
             display: flex;
             list-style: none;
-            gap: 2rem;
+            gap: 1.5rem;
         }
 
         nav a {
-            color: var(--text-light);
+            color: var(--pri-green);
             text-decoration: none;
             transition: color 0.3s;
+            text-align: center;
+            font-weight: bold;
         }
 
         nav a:hover {
-            color: var(--text-dark);
+            color: var(--pri-green);
+            text-align: center;
+            text-decoration: underline;
         }
-
+        
         /* Main Content */
         main {
             min-height: calc(100vh - 200px);
@@ -86,9 +114,11 @@
             background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(10px);
             border-radius: 15px;
+            border-color: var(--pri-orange);
+            border-width: 4px;
+            border-style: solid;
             padding: 2rem;
             margin: 2rem 0;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
         .loading {
@@ -122,12 +152,13 @@
             color: var(--text-dark);
             border-bottom: 3px solid var(--pastel-blue);
             padding-bottom: 0.5rem;
+            color: var(--pri-orange);
         }
 
         .notion-content h2 {
             font-size: 2rem;
             margin: 2rem 0 1rem 0;
-            color: var(--text-dark);
+            color: var(--pri-orange);
         }
 
         .notion-content h3 {
@@ -167,7 +198,6 @@
             padding: 1rem;
             border-radius: 8px;
         }
-
         /* Footer */
         footer {
             background: rgba(255, 255, 255, 0.9);
@@ -185,7 +215,6 @@
         .footer-content p {
             margin-bottom: 0.5rem;
         }
-
         /* Responsive */
         @media (max-width: 768px) {
             .header-content {
@@ -218,32 +247,26 @@
                 opacity: 1;
             }
         }
+
     </style>
 </head>
 <body>
     <header>
-        <div class="container">
-            <div class="header-content">
-                <a href="#" class="logo">UESCAN</a>
-                <nav>
-                    <!-- <ul>
-                        <li><a href="#resources">Resources</a></li>
-                        <li><a href="#events">Events</a></li>
-                        <li><a href="#about">About</a></li>
-                        <li><a href="#contact">Contact</a></li>
-                    </ul> -->
-                </nav>
-            </div>
-        </div>
+        <a href="./index1.html" class="logo" aria-label="UESCAN home">
+            <img src="images/uescan_logo.png" alt="UESCAN logo">
+        </a>
+        <nav>
+            <ul>
+                <!-- <li><a href="#about">About</a></li> -->
+                <li><a href="#initiatives">Initiatives</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="#signup">Sign Up</a></li>
+            </ul>
+        </nav>
     </header>
-
     <main>
         <div class="container">
             <div class="content-area">
-                <div id="last-updated" class="last-updated" style="display: none;">
-                    <!-- Last updated timestamp will appear here -->
-                </div>
-                
                 <div id="content-loading" class="loading">
                     <p>Loading community content...</p>
                 </div>
@@ -255,10 +278,13 @@
                 <div id="notion-content" class="notion-content" style="display: none;">
                     <!-- Content will be loaded here -->
                 </div>
+
+                <div id="last-updated" class="last-updated" style="display: none;">
+                    <!-- Last updated timestamp will appear here -->
+                </div>
             </div>
         </div>
     </main>
-
     <footer>
         <div class="container">
             <div class="footer-content">
@@ -267,8 +293,8 @@
                 <p>Content updated daily from our community editors</p>
             </div>
         </div>
-    </footer>
-
+    </footer> 
+    
     <script>
         // Load static content generated by GitHub Actions
         async function loadContent() {
@@ -328,7 +354,7 @@
                 <p>Building community through mutual support</p>
                 
                 <h2>About Our Network</h2>
-                <p>UESCAN is a community-driven mutual aid network serving the East Side. We connect neighbors to share resources, support each other, and build a more resilient community together.</p>
+                <p>UES CAN was co-founded in July 2025 by 20+ neighbors, many of whom first convened in late 2024 over concerns about increased state repression. We organized ourselves into a mutual aid group, creating a space in which every voice matters and decisions are made collectively to directly impact our community. Our early initiatives included providing food & water to neighbors and raising funds to support those in need.</p>
                 
                 <h2>How We Help</h2>
                 <ul>
@@ -342,7 +368,7 @@
                 <p>Whether you need support or want to help others, there's a place for you in UESCAN. Community members collaborate to keep our resources up to date and responsive to neighborhood needs.</p>
                 
                 <blockquote>
-                    <p>"Mutual aid is not charity. It's solidarity." - Our content is maintained by community volunteers working together.</p>
+                    <p>“Activism and mutual aid shouldn’t feel like volunteering or like a hobby -- it should feel like living in alignment with our hopes for the world and with our passions. It should enliven us.” - Our content is maintained by community volunteers working together.</p>
                 </blockquote>
                 
                 <p><em>Note: Our content is automatically updated daily from community editors. If you're seeing this message, the latest content may still be processing.</em></p>
