@@ -198,6 +198,44 @@ jobs:
           }
         }
 
+        async function handleColumnListBlock(block) {
+          try {
+            const columnListData = await fetchBlockChildren(block.id);
+            const columns = columnListData.results;
+            
+            if (columns.length === 0) {
+              return '';
+            }
+            
+            const columnWidth = `${100 / columns.length}%`;
+            let html = '<div class="notion-columns" style="display: flex; gap: 1rem; margin: 1rem 0; flex-wrap: wrap;">\n';
+            
+            for (const column of columns) {
+              if (column.type !== 'column') continue;
+              
+              const columnContent = await fetchBlockChildren(column.id);
+              const columnBlocks = [];
+              
+              for (const childBlock of columnContent.results) {
+                const blockHtml = await convertNotionBlockToHTML(childBlock);
+                if (blockHtml.trim()) {
+                  columnBlocks.push(blockHtml);
+                }
+              }
+              
+              html += `  <div class="notion-column" style="flex: 1; min-width: 200px;">\n`;
+              html += columnBlocks.join('\n');
+              html += `  </div>\n`;
+            }
+            
+            html += '</div>';
+            return html;
+          } catch (error) {
+            console.error('Error processing column list:', error);
+            return '<p>Error loading columns</p>';
+          }
+        }
+
         async function convertNotionBlockToHTML(block) {
           const type = block.type;
           const content = block[type];
@@ -247,6 +285,13 @@ jobs:
             
             case 'table':
               return await handleTableBlock(block);
+            
+            case 'column_list':
+              return await handleColumnListBlock(block);
+            
+            case 'column':
+              // Columns are handled by column_list, so we skip them here
+              return '';
             
             default:
               const defaultText = convertRichText(content.rich_text || []);
