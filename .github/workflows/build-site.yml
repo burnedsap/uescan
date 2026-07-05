@@ -1,0 +1,31 @@
+name: Update content from Etherpad
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"   # every 10 minutes
+  workflow_dispatch: {}       # lets you trigger it manually from the Actions tab
+
+jobs:
+  update-content:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Pull content from Etherpad
+        env:
+          ETHERPAD_URL: ${{ secrets.ETHERPAD_URL }}
+          ETHERPAD_API_KEY: ${{ secrets.ETHERPAD_API_KEY }}
+          PAD_ID: uescan-homepage
+        run: node scripts/pull-etherpad.js
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "content-bot"
+          git config user.email "actions@github.com"
+          git add content/notion-content.json
+          git diff --quiet --cached || git commit -m "Update content from Etherpad"
+          git push
